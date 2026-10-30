@@ -1,0 +1,1814 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Faz Carrom Online</title>
+<style>
+:root{--bg:#4b2a7b;--fg:#ffffff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#2d1a4d;--fg:#ffffff}}
+:root[data-theme="dark"]{--bg:#2d1a4d;--fg:#ffffff}
+html,body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,Arial,sans-serif;text-align:center}
+canvas{width:92vw;max-width:400px;height:auto;margin-top:12px;border-radius:8px;touch-action:none}
+input{width:80%;max-width:360px}
+p{margin:6px}
+button{font-size:14px;padding:6px 10px;margin:2px;border-radius:8px;border:0;background:rgba(255,255,255,0.2);color:#fff}
+button.on{background:#ffd60a;color:#000}
+#home{position:fixed;inset:0;z-index:20;overflow:auto;background:radial-gradient(circle at 50% 15%,#6b1420,#2a0a10 60%,#12040a);color:#fff;box-sizing:border-box;padding:12px 12px 90px}
+#home .top{display:flex;align-items:center;gap:10px;max-width:420px;margin:0 auto 6px;text-align:left}
+#home .av{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#ff7a66,#a01a10);border:3px solid #ffd9a0;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:bold}
+.logo{font-size:38px;font-weight:900;margin:14px 0 18px;background:linear-gradient(#fff6c8,#e0a82a);-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:1px}
+.coin{display:inline-block;width:.8em;height:.8em;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ff7a66,#a01a10);border:3px solid #ffd9a0;vertical-align:-0.08em}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:420px;margin:0 auto}
+.tile{background:linear-gradient(160deg,#8a3a1e,#4a1a14);border:2px solid #c9893a;border-radius:12px;overflow:hidden}
+.tile .ic{font-size:56px;padding:18px 0}
+.tile .lb{background:#3a1d6e;font-weight:bold;padding:9px 2px;font-size:14px}
+#home .nav{position:fixed;left:0;right:0;bottom:0;background:#1c070c;border-top:2px solid #c9893a;padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px));display:flex;justify-content:center;gap:8px}
+#home .view{max-width:420px;margin:0 auto}
+#home input{font-size:16px;padding:8px;border-radius:8px;border:0;width:120px}
+button.big{font-size:18px;padding:12px 18px;margin:6px}
+.frow{display:flex;gap:6px;align-items:center;justify-content:space-between;margin:6px 0;background:rgba(255,255,255,.08);padding:6px 8px;border-radius:8px;text-align:left}
+.mtiles{display:flex;gap:10px;justify-content:center;margin:8px 0}
+.mt{flex:0 0 120px;background:#26166d;border:2px solid #4a5fc0;border-radius:12px;padding:10px 4px;font-weight:bold;font-size:13px}
+.mt.sel{border-color:#ffd60a;background:#3b2a9a}
+.mt .ic{font-size:34px}
+.arenas{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;padding:10px 4px;-webkit-overflow-scrolling:touch}
+.acard{flex:0 0 76%;scroll-snap-align:center;background:linear-gradient(#3b2a9a,#26166d);border:3px solid #e8c89a;border-radius:18px;padding:12px;text-align:center;opacity:.75}
+.acard.sel{opacity:1;outline:3px solid #ffd60a}
+.acard .sky{font-size:64px}
+.acard .nm{font-size:30px;font-weight:900;margin:2px 0 8px;letter-spacing:1px}
+.acard .box{background:rgba(0,0,20,.45);border-radius:8px;padding:8px;margin:6px 0;font-weight:bold}
+.acard .prz{font-size:26px}
+.lobbar{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:6px}
+.lobbar button.on{background:#ffd60a;color:#000}
+.gcoin{display:inline-block;width:1.15em;height:1.15em;border-radius:50%;vertical-align:-0.2em;position:relative;background:radial-gradient(circle at 35% 30%,#fff3a8 0%,#ffd84d 35%,#e0a010 70%,#a86a00 100%);border:2px solid #b8790a;box-shadow:inset 0 0 0 2px rgba(255,255,255,.35),0 1px 3px rgba(0,0,0,.6);box-sizing:border-box}
+.gcoin::after{content:"\2605";position:absolute;left:0;right:0;top:0;bottom:0;display:flex;align-items:center;justify-content:center;font-size:.62em;color:#9a5d00}
+.acard.lock{filter:saturate(.5)}
+.acard .lockmsg{color:#ffb3b3;font-size:13px;font-weight:bold;margin-top:4px}
+#home{background:linear-gradient(#5a1a12,#2a0a08 70%,#120403)}
+.hbar{display:flex;align-items:center;gap:8px;max-width:440px;margin:0 auto 8px;background:#6b4423;border-radius:12px;padding:8px}
+.hbar .av{width:42px;height:42px;font-size:20px}
+.ib{font-size:20px;padding:6px 10px}
+.pill{margin-left:auto;background:rgba(0,0,0,.35);border-radius:20px;padding:4px 6px 4px 10px;font-weight:bold;white-space:nowrap}
+.pill+.pill{margin-left:4px}
+.plus{background:#3fa535;color:#fff;border-radius:50%;padding:0;width:26px;height:26px;margin:0 0 0 4px;font-weight:bold}
+.gem{display:inline-block;width:1em;height:1em;background:linear-gradient(135deg,#9fd0ff,#2a6fe0);transform:rotate(45deg) scale(.8);border-radius:3px;vertical-align:-.1em;margin-right:2px}
+.row3{display:flex;gap:6px;max-width:440px;margin:0 auto}
+.hb{flex:1;background:linear-gradient(#d98a4a,#a85a24);color:#fff;border:2px solid #7a3d14;border-radius:10px;padding:8px 2px;font-weight:bold;font-size:13px;margin:0}
+.mode{display:block;width:88%;max-width:400px;margin:12px auto;padding:16px 10px;border:3px solid #c9893a;border-radius:12px;color:#fff;font-size:26px;font-weight:900;text-align:left;padding-left:24px;line-height:1.1}
+.mode.blue{background:linear-gradient(90deg,#1a3fb0,#2a5ad8)}
+.mode.green{background:linear-gradient(90deg,#1f7a46,#2f9a5a)}
+.mode.gold{background:linear-gradient(90deg,#d9891a,#f0b030)}
+.chests{display:flex;gap:6px;max-width:440px;margin:14px auto}
+.slot{flex:1;min-height:74px;background:rgba(0,0,0,.35);border:2px solid #6b2a1a;border-radius:10px;font-size:12px;padding:6px 2px;color:#d9a79a}
+.spinbtn{position:absolute;right:10px;top:150px;background:#7a1fa0;color:#fff;font-weight:900;border:3px solid #ffd24a;border-radius:50%;width:56px;height:56px;padding:0}
+#home .nav{gap:2px}
+#home .nav button{flex:1;margin:0;padding:8px 2px;font-size:12px}
+#wheel{width:220px;height:220px;border-radius:50%;margin:8px auto;border:6px solid #ffd24a;background:conic-gradient(#c0392b 0 45deg,#f1c40f 45deg 90deg,#2980b9 90deg 135deg,#27ae60 135deg 180deg,#8e44ad 180deg 225deg,#e67e22 225deg 270deg,#16a085 270deg 315deg,#d35400 315deg 360deg);transition:transform 3s cubic-bezier(.2,.8,.2,1)}
+.tg{min-width:64px}
+.tg.on{background:#3fa535}
+.skin{display:inline-block;width:34px;height:34px;border-radius:50%;border:2px solid #fff;vertical-align:middle;margin-right:8px}
+</style>
+</head>
+<body>
+<div id="banner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:50;background:#ffd60a;color:#000;padding:12px;font-weight:bold;text-align:center"></div>
+<div id="home">
+<div id="v_home" class="view" style="max-width:460px;position:relative">
+<span id="meName" hidden></span><span id="meCode" hidden></span>
+<div class="hbar"><div class="av" id="av" onclick="openProfile()">F</div><button class="ib" onclick="showView('v_settings')">&#9881;</button>
+<span class="pill"><span class="gem"></span><span id="meGems">0</span><button class="plus" onclick="showView('v_shop')">+</button></span>
+<span class="pill"><span class="gcoin"></span> <span id="meCoins">0</span><button class="plus" onclick="showView('v_shop')">+</button></span></div>
+<div class="row3"><button class="hb" onclick="collectFree()">Free Rewards<br><small id="freeLbl">Collect Now!</small></button>
+<button class="hb" onclick="showView('v_lucky')">Lucky Shot</button>
+<button class="hb" onclick="showView('v_board')">Leaderboards</button></div>
+<button class="spinbtn" onclick="showView('v_spin')">SPIN</button>
+<div class="logo">FAZ CARR<span class="coin"></span>M</div>
+<button class="mode blue" onclick="startMode('disc')">Play<br>Disc Pool</button>
+<button class="mode green" onclick="startMode('carrom')">Play<br>Carrom</button>
+<button class="mode gold" onclick="startMode('free')">Play<br>Freestyle</button>
+<div class="chests" id="chests"></div>
+</div>
+<div id="v_friends" class="view" style="display:none">
+<h3>Friends</h3>
+<p style="font-size:14px">Your ID: <b id="meCode2"></b> <button onclick="copyCode()">Copy</button><br>Give your ID to a friend, and add their ID here.</p>
+<div><input id="fname" placeholder="Friend name"> <input id="fcode" placeholder="Friend ID" maxlength="6" style="width:100px"> <button onclick="addFriend()">Add</button></div>
+<div id="flist" style="margin-top:8px"></div>
+<p style="margin-bottom:0">Same phone:</p>
+<button class="big" onclick="playLocal('2p')">2 Players</button><button class="big" onclick="playLocal('4p')">4 Players</button>
+</div>
+<div id="v_online" class="view" style="display:none">
+<h3>Play online</h3>
+<button class="big" onclick="openLobby('online','bw')">Create room</button>
+<div><input id="hcode" placeholder="4 digit code" maxlength="4" inputmode="numeric"> <button onclick="onlineJoin()">Join</button></div>
+</div>
+<div id="v_chal" class="view" style="display:none">
+<h3>Challenges</h3>
+<button class="big" onclick="playCpu(160)">Freestyle 160 vs Computer</button><br>
+<button class="big" onclick="playCpu(210)">Freestyle 210 vs Computer</button>
+</div>
+<div id="v_settings" class="view" style="display:none"><h3>Settings</h3>
+<div class="frow"><span>Language</span><button onclick="alert('English only for now')">Change</button></div>
+<div id="cfgList"></div></div>
+<div id="v_spin" class="view" style="display:none"><h3>Daily Spin</h3><div style="font-size:30px;margin-bottom:-14px">&#9660;</div>
+<div id="wheel"></div><button class="big" onclick="doSpin()">SPIN</button><div id="spinLegend" style="font-size:13px"></div></div>
+<div id="v_lucky" class="view" style="display:none"><h3>Lucky Shot</h3><p>Pick one box. One free pick every day.</p>
+<button class="big" onclick="pickBox()">&#127873;</button><button class="big" onclick="pickBox()">&#127873;</button><button class="big" onclick="pickBox()">&#127873;</button></div>
+<div id="v_equip" class="view" style="display:none"><h3>Equipment</h3><p style="font-size:13px">Striker styles</p><div id="eqList"></div></div>
+<div id="v_events" class="view" style="display:none"><h3>Events</h3><div id="evList"></div></div>
+<div id="v_shop" class="view" style="display:none"><h3>Shop</h3><p style="font-size:13px">Swap gems for gold coins. No real money is used.</p><div id="shopList"></div></div>
+<div id="v_board" class="view" style="display:none"><h3>Leaderboards</h3><div id="boardList"></div>
+<p style="font-size:12px">A world ranking needs an online server. This list shows your results against your friends.</p></div>
+<div id="v_rules" class="view" style="display:none;text-align:left;font-size:15px;line-height:1.4">
+<button onclick="showView('v_lobby')">&#8592; Back</button>
+<h3>Rules</h3>
+<b>Black &amp; White</b>
+<ul style="padding-left:18px;margin:4px 0">
+<li>9 white, 9 black and the red queen. Player 1 plays white, Player 2 plays black.</li>
+<li>Pocket one of your coins and you shoot again. A coin of the other colour counts for the other player and ends your turn.</li>
+<li>Queen: pocket it, then cover it by pocketing one of your coins in the same shot or the next one. If you fail, the queen goes back to the centre.</li>
+<li>Foul (your striker goes in a pocket): your turn ends, the coins from that shot go back, and one of your pocketed coins goes back too. If you have none, you owe it.</li>
+<li>Your last coin before the queen is covered is a foul: it goes back with one more coin.</li>
+<li>You win when all 9 of your coins are pocketed and the queen is covered.</li>
+</ul>
+<b>Freestyle</b>
+<ul style="padding-left:18px;margin:4px 0">
+<li>Any coin counts for the player who pockets it: white 20, black 10, queen 50 (the queen must be covered by any coin).</li>
+<li>First to the target points wins.</li>
+</ul>
+<b>No Queen</b>: the red coin is removed.
+</div>
+<div id="v_lobby" class="view" style="display:none">
+<div style="display:flex;justify-content:space-between;align-items:center"><button onclick="showView('v_home')">&#8592; Back</button><button onclick="showView('v_rules')">?</button><button onclick="showView('v_online')">Join</button><button onclick="freeCoins()">Free coins</button><b><span class="gcoin"></span> <span id="lobCoins">0</span></b></div>
+<div class="mtiles">
+<div class="mt" id="lt_bw" onclick="pickType('bw')"><div class="ic">&#9898;&#9899;</div>BLACK &amp; WHITE</div>
+<div class="mt" id="lt_free" onclick="pickType('free')"><div class="ic">&#127775;</div>FREESTYLE</div>
+</div>
+<div class="arenas" id="arenas"></div>
+<div class="lobbar">
+<span><button id="lm_cpu" class="on" onclick="pickOpp('cpu')">vs Computer</button><button id="lm_on" onclick="pickOpp('online')">Online</button></span>
+<span><button id="q_no" onclick="pickQueen(false)">No Queen</button><button id="q_yes" class="on" onclick="pickQueen(true)">Carrom</button></span>
+<button class="big" onclick="lobbyPlay()">PLAY</button>
+</div>
+</div>
+<div id="v_profile" class="view" style="display:none">
+<div class="top"><div class="av" id="pav">F</div><div><b id="pName"></b> <button onclick="editName()">Edit</button><br><small>ID: <span id="pCode"></span></small></div><div style="margin-left:auto;font-weight:bold;font-size:18px"><span class="gcoin"></span> <span id="pCoins">0</span></div></div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0;text-align:center">
+<div class="frow" style="display:block"><b id="st_g">0</b><br><small>Games</small></div>
+<div class="frow" style="display:block"><b id="st_w">0</b><br><small>Wins</small></div>
+<div class="frow" style="display:block"><b id="st_l">0</b><br><small>Losses</small></div>
+<div class="frow" style="display:block"><b id="st_p">0%</b><br><small>Win rate</small></div>
+</div>
+<div id="st_modes" style="font-size:14px;margin-bottom:8px;text-align:left"></div>
+<h4 style="margin:10px 0 4px;text-align:left">Played with</h4><div id="pOpp"></div>
+<h4 style="margin:10px 0 4px;text-align:left">Friends (<span id="pFc">0</span>)</h4><div id="pFr"></div>
+<h4 style="margin:10px 0 4px;text-align:left">Recent matches</h4><div id="pLog"></div>
+<h4 style="margin:10px 0 4px;text-align:left">Backup</h4>
+<textarea id="bk" rows="3" style="width:95%;font-size:12px"></textarea><br>
+<button onclick="doBackup()">Show backup</button> <button onclick="doRestore()">Restore</button>
+<p style="font-size:12px">Your coins, friends and stats are saved on this phone. Make a backup before you clear Safari data.</p>
+</div>
+<div class="nav">
+<button onclick="showView('v_home')">Home</button>
+<button onclick="showView('v_friends')">Friends</button>
+<button onclick="showView('v_equip')">Equipment</button>
+<button onclick="showView('v_events')">Events</button>
+<button onclick="showView('v_shop')">Shop</button>
+</div>
+</div>
+<div id="game" style="display:none">
+<h3>Faz Carrom</h3>
+<div style="margin:4px">
+<div id="ctl" style="display:none">
+<button id="m_cpu" onclick="startGame('cpu')">vs Computer</button>
+<button id="m_2p" onclick="startGame('2p')">2 Players</button>
+<button id="m_4p" onclick="startGame('4p')">4 Players</button><br>
+<button id="t_0" onclick="setTarget(0)">Classic</button>
+<button id="t_160" onclick="setTarget(160)">Freestyle 160</button>
+<button id="t_210" onclick="setTarget(210)">Freestyle 210</button><br>
+<div style="margin:4px"><button onclick="createRoom()">Create room</button>
+<input id="code" placeholder="code" maxlength="4" inputmode="numeric" style="width:70px;font-size:16px;padding:6px">
+<button onclick="joinRoom()">Join</button></div>
+</div>
+<p id="net" style="font-size:13px"></p>
+<div id="addf" style="display:none"><button id="addfbtn" onclick="addPeerFriend()"></button></div>
+<button onclick="toggleBar()">&#9776; Menu</button>
+<div id="bar" style="display:none">
+<button onclick="soundOn=!soundOn;this.innerText='Sound: '+(soundOn?'ON':'OFF');unlockAudio()">Sound: ON</button>
+<button onclick="restartGame()">Restart</button>
+<button onclick="stopGame()">Stop</button>
+<button onclick="goHome()">Home</button>
+</div>
+</div>
+<canvas id="c" width="400" height="400"></canvas>
+<input id="s" type="range" min="90" max="310" value="200">
+<p id="score">White 0/9 | Black 0/9 | Turn: White</p>
+<audio id="remoteAudio" autoplay playsinline></audio>
+<div id="chat" style="display:none;margin:8px auto"><button id="callbtn" onclick="callBtn()">Call</button></div>
+</div>
+<script>
+var canvas = document.getElementById("c");
+var ctx = canvas.getContext("2d");
+var slider = document.getElementById("s");
+var strikerX = 200;
+var striker = {x: 200, y: 332, vx: 0, vy: 0, r: 13.5, m: 2};
+var coins = [{x: 200, y: 200, vx: 0, vy: 0, r: 12.35, m: 1, color: "#d62828"}];
+var pockets = [[17, 17], [383, 17], [17, 383], [383, 383]];
+var moving = false, aiming = false, aimX = 200, aimY = 200, score = 0;
+var foul = false, shotCoins = [];
+var turn = 0, counts = [0, 0], gameOver = false, mode = "2p", sides = [0, 2], cpuBusy = false;
+var target = 0, scores = [0, 0, 0, 0], winnerName = "";
+var net = {id: Math.random().toString(36).slice(2, 8), topic: "", es: null, me: 0, on: false, pending: null, shots: 0, jt: null};
+var shooter = 0, flipped = false, winIdx = -1;
+var queenState = 0, queenCoin = null, owed = [0, 0];
+var perSide = 9, queenOn = true, arenaFee = 0, arenaPrize = 0, arenaName = "";
+var soundOn = true, actx = null, lastTick = 0;
+
+var hitData = "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";
+var hitBuf = null, hitLoading = false;
+
+function loadHit() {
+  if (hitBuf || hitLoading || !actx) { return; }
+  hitLoading = true;
+  try {
+    var bin = atob(hitData), bytes = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) { bytes[i] = bin.charCodeAt(i); }
+    actx.decodeAudioData(bytes.buffer, function (b) { hitBuf = b; }, function () { hitLoading = false; });
+  } catch (e) { hitLoading = false; }
+}
+
+function playHit(t, vol) {
+  var src = actx.createBufferSource(), g = actx.createGain();
+  src.buffer = hitBuf;
+  src.playbackRate.value = 0.96 + Math.random() * 0.1;
+  g.gain.value = Math.min(1, 0.3 + 0.7 * vol);
+  src.connect(g); g.connect(actx.destination);
+  src.start(t);
+}
+
+function unlockAudio() {
+  try {
+    if (!actx) { actx = new (window.AudioContext || window.webkitAudioContext)(); }
+    loadHit();
+    if (actx.state === "suspended") { actx.resume(); }
+  } catch (e) {}
+}
+
+function tone(f0, f1, start, dur, type, vol) {
+  var o = actx.createOscillator(), g = actx.createGain();
+  o.type = type;
+  o.frequency.setValueAtTime(f0, start);
+  o.frequency.exponentialRampToValueAtTime(f1, start + dur);
+  g.gain.setValueAtTime(vol, start);
+  g.gain.exponentialRampToValueAtTime(0.001, start + dur);
+  o.connect(g); g.connect(actx.destination);
+  o.start(start); o.stop(start + dur + 0.02);
+}
+
+var hitPartials = [[883, 0.35, 0.06], [1023, 0.5, 0.06], [1281, 0.6, 0.055], [1421, 0.9, 0.05], [1561, 0.8, 0.05], [1723, 0.7, 0.045], [1884, 0.8, 0.04], [2121, 0.9, 0.04], [3200, 0.12, 0.02]];
+
+function woodHit(t, vol) {
+  var k, o, g;
+  for (k = 0; k < hitPartials.length; k++) {
+    o = actx.createOscillator(); g = actx.createGain();
+    o.type = "sine";
+    o.frequency.value = hitPartials[k][0] * (0.97 + Math.random() * 0.06);
+    g.gain.setValueAtTime(hitPartials[k][1] * 0.3 * vol, t);
+    g.gain.setTargetAtTime(0, t + 0.002, hitPartials[k][2]);
+    o.connect(g); g.connect(actx.destination);
+    o.start(t); o.stop(t + 0.5);
+  }
+  var len = Math.floor(actx.sampleRate * 0.04);
+  var buf = actx.createBuffer(1, len, actx.sampleRate);
+  var d = buf.getChannelData(0);
+  for (k = 0; k < len; k++) { d[k] = (Math.random() * 2 - 1) * Math.pow(1 - k / len, 2); }
+  var src = actx.createBufferSource(); src.buffer = buf;
+  var bp = actx.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = 2000; bp.Q.value = 0.7;
+  var ng = actx.createGain(); ng.gain.value = 0.6 * vol;
+  src.connect(bp); bp.connect(ng); ng.connect(actx.destination);
+  src.start(t);
+}
+
+function sound(type, vol) {
+  if (type === "pocket" && cfg.vib && navigator.vibrate) { try { navigator.vibrate(40); } catch (e) {} }
+  if (!soundOn || !actx) { return; }
+  try {
+    var t = actx.currentTime;
+    if (type === "hit") {
+      var now = Date.now();
+      if (now - lastTick < 40) { return; }
+      lastTick = now;
+      if (hitBuf) { playHit(t, vol || 1); } else { woodHit(t, vol || 1); }
+    } else if (type === "pocket") {
+      tone(320, 70, t, 0.3, "sine", 0.5);
+    } else if (type === "foul") {
+      tone(160, 90, t, 0.45, "sawtooth", 0.25);
+    } else if (type === "win") {
+      tone(523, 523, t, 0.18, "triangle", 0.4);
+      tone(659, 659, t + 0.18, 0.18, "triangle", 0.4);
+      tone(784, 784, t + 0.36, 0.35, "triangle", 0.4);
+    }
+  } catch (e) {}
+}
+
+function myColor() { return turn % 2 === 0 ? "#f5f5f5" : "#222222"; }
+function isCpuTurn() { return mode === "cpu" && turn === 1; }
+
+function strikerPos() {
+  var sd = sides[turn];
+  if (sd === 0) { return [strikerX, 332]; }
+  if (sd === 2) { return [strikerX, 68]; }
+  if (sd === 1) { return [332, strikerX]; }
+  return [68, strikerX];
+}
+
+function placeStriker() {
+  var pp = strikerPos();
+  striker.x = pp[0]; striker.y = pp[1];
+}
+
+function coinPts(c) { return c.color === "#f5f5f5" ? 20 : (c.color === "#222222" ? 10 : 50); }
+
+function newCoin(color) { return {x: 200, y: 200, vx: 0, vy: 0, r: 12.35, m: 1, color: color}; }
+function returnCoin(c) {
+  var sp = freeSpot();
+  c.x = sp[0]; c.y = sp[1]; c.vx = 0; c.vy = 0;
+  coins.push(c);
+}
+
+function checkWin() {
+  var n, w = -1;
+  if (target) {
+    for (n = 0; n < sides.length; n++) { if (scores[n] >= target) { w = n; } }
+    if (w < 0 && coins.length === 0) {
+      w = 0;
+      for (n = 1; n < sides.length; n++) { if (scores[n] > scores[w]) { w = n; } }
+    }
+    if (w < 0) { return false; }
+    winIdx = w;
+    winnerName = (mode === "cpu" && w === 1) ? "COMPUTER" : "PLAYER " + (w + 1);
+    return true;
+  }
+  var qok = !queenOn || queenState === 2;
+  if (counts[0] >= perSide && qok) { winnerName = "WHITE"; winIdx = 0; return true; }
+  if (counts[1] >= perSide && qok) { winnerName = "BLACK"; winIdx = 1; return true; }
+  return false;
+}
+
+function showStatus(msg) {
+  var who = (isCpuTurn() ? "Computer" : "Player " + (turn + 1)) + (target ? "" : (turn % 2 === 0 ? " (White)" : " (Black)")) + (mode === "online" ? (turn === net.me ? " - YOU" : " - friend") : "");
+  var info = "White " + counts[0] + "/" + perSide + " | Black " + counts[1] + "/" + perSide;
+  if (target) {
+    info = "Target " + target + " |";
+    for (var q2 = 0; q2 < sides.length; q2++) {
+      info += " " + ((mode === "cpu" && q2 === 1) ? "CPU" : "P" + (q2 + 1)) + " " + scores[q2];
+    }
+  }
+  if (queenState === 1) { info += " | Cover the queen!"; }
+  document.getElementById("score").innerText = info + " | Turn: " + who + (msg ? " | " + msg : "");
+}
+
+function startGame(m) {
+  statsDone = false;
+  queenState = 0; queenCoin = null; owed = [0, 0];
+  mode = m;
+  sides = m === "4p" ? [0, 1, 2, 3] : [0, 2];
+  buildCoins();
+  turn = 0; counts = [0, 0]; scores = [0, 0, 0, 0]; gameOver = false; moving = false; foul = false; shotCoins = []; cpuBusy = false;
+  striker.out = false; striker.vx = 0; striker.vy = 0;
+  strikerX = 200; slider.value = 200; slider.disabled = false;
+  placeStriker();
+  showStatus("");
+  var ids = ["cpu", "2p", "4p"];
+  for (var q = 0; q < ids.length; q++) {
+    document.getElementById("m_" + ids[q]).className = ids[q] === m ? "on" : "";
+  }
+  net.shots = 0; net.pending = null;
+  if (m !== "online") { setFlip(false); }
+  var tids = [0, 160, 210];
+  for (var q3 = 0; q3 < tids.length; q3++) {
+    document.getElementById("t_" + tids[q3]).className = tids[q3] === target ? "on" : "";
+  }
+  unlockAudio();
+}
+
+function stopGame(remote) {
+  if (!remote && !gameOver && (mode === "cpu" || mode === "online")) { recordGame("loss", true); }
+  gameOver = true; moving = false; aiming = false; foul = false; shotCoins = [];
+  striker.vx = 0; striker.vy = 0;
+  for (var i = 0; i < coins.length; i++) { coins[i].vx = 0; coins[i].vy = 0; }
+  slider.disabled = true;
+  document.getElementById("score").innerText = "Game stopped. Tap Restart to play again.";
+  if (!remote && mode === "online" && net.on) { netPost({t: "x"}); }
+}
+
+function setFlip(on) {
+  flipped = on;
+  canvas.style.transform = on ? "rotate(180deg)" : "";
+  slider.style.transform = on ? "rotate(180deg)" : "";
+}
+
+function setNet(t) { document.getElementById("net").innerText = t; }
+
+function netPost(m) {
+  if (!net.topic) { return; }
+  m.f = net.id;
+  try {
+    fetch("https://ntfy.sh/" + net.topic, {method: "POST", body: JSON.stringify(m)})
+      .catch(function () { setNet("Network problem. Message not sent."); });
+  } catch (e) {}
+}
+
+function netClose() {
+  if (net.es) { net.es.close(); net.es = null; }
+  if (net.jt) { clearInterval(net.jt); net.jt = null; }
+  net.on = false;
+  net.peer = null;
+  var ab = document.getElementById("addf");
+  if (ab) { ab.style.display = "none"; }
+}
+
+function netListen(onopen) {
+  net.es = new EventSource("https://ntfy.sh/" + net.topic + "/sse");
+  net.es.onopen = function () { if (onopen) { onopen(); onopen = null; } };
+  net.es.onerror = function () { if (!net.on) { setNet("Connecting to the game server..."); } };
+  net.es.onmessage = function (ev) {
+    try {
+      var d = JSON.parse(ev.data);
+      if (d.event !== "message") { return; }
+      var m = JSON.parse(d.message);
+      if (m.f === net.id) { return; }
+      handleNet(m);
+    } catch (e) {}
+  };
+}
+
+function packState() {
+  var cs = [];
+  for (var i = 0; i < coins.length; i++) {
+    var c = coins[i];
+    cs.push([Math.round(c.x * 10) / 10, Math.round(c.y * 10) / 10, c.color === "#f5f5f5" ? 0 : (c.color === "#222222" ? 1 : 2)]);
+  }
+  return {t: "s", n: net.shots, c: cs, s: [Math.round(striker.x * 10) / 10, Math.round(striker.y * 10) / 10],
+    tn: turn, ct: counts, sc: scores, qs: queenState, ow: owed, go: gameOver ? 1 : 0, wn: winnerName, st: document.getElementById("score").innerText};
+}
+
+function applyState(m) {
+  coins = [];
+  for (var i = 0; i < m.c.length; i++) {
+    coins.push({x: m.c[i][0], y: m.c[i][1], vx: 0, vy: 0, r: 12.35, m: 1,
+      color: m.c[i][2] === 0 ? "#f5f5f5" : (m.c[i][2] === 1 ? "#222222" : "#d62828")});
+  }
+  striker.x = m.s[0]; striker.y = m.s[1]; striker.out = false; striker.vx = 0; striker.vy = 0;
+  turn = m.tn; counts = m.ct; scores = m.sc; gameOver = !!m.go; winnerName = m.wn;
+  queenState = m.qs | 0; owed = m.ow || [0, 0];
+  if (queenState === 1 && !queenCoin) { queenCoin = newCoin("#d62828"); }
+  var sd = sides[turn];
+  strikerX = (sd === 0 || sd === 2) ? striker.x : striker.y;
+  slider.value = strikerX;
+  document.getElementById("score").innerText = m.st;
+}
+
+function handleNet(m) {
+  if (!m) { return; }
+  if (m.t === "j") {
+    if (net.me !== 0) { return; }
+    if (!net.on) {
+      net.on = true;
+      showChat();
+      setFlip(false);
+      chargeEntry();
+      startGame("online");
+      setNet("Connected! You are White (bottom player).");
+    }
+    netPost(settingsMsg());
+    sendProfile();
+  } else if (m.t === "i") {
+    if (net.me !== 1 || net.on) { return; }
+    perSide = m.pc === 6 ? 6 : 9; queenOn = !!m.qn; arenaFee = Number(m.fee) || 0; arenaPrize = Number(m.prz) || 0; arenaName = String(m.an || "").slice(0, 14);
+    if (!chargeEntry()) {
+      if (net.jt) { clearInterval(net.jt); net.jt = null; }
+      netPost({t: "nc"});
+      setNet("Not enough coins for this arena (" + arenaFee + " needed).");
+      return;
+    }
+    net.on = true;
+    showChat();
+    if (net.jt) { clearInterval(net.jt); net.jt = null; }
+    target = m.tg;
+    setFlip(true);
+    startGame("online");
+    setNet("Connected! You are Black (top player). Your board is turned for you.");
+    sendProfile();
+  } else if (m.t === "shot") {
+    if (mode === "online" && net.on && !moving && !gameOver && turn !== net.me) {
+      strikerX = m.sx; placeStriker();
+      fire(m.vx, m.vy, true);
+    }
+  } else if (m.t === "s") {
+    if (m.n === net.shots) {
+      if (moving) { net.pending = m; } else { applyState(m); }
+    }
+  } else if (m.t === "co") {
+    if (callState === "idle") {
+      pendingOffer = m.sdp; callState = "incoming";
+      callUI("Answer call"); setNet("Your friend is calling. Tap Answer call.");
+    }
+  } else if (m.t === "ca") {
+    if (pc && callState === "calling") {
+      pc.setRemoteDescription({type: "answer", sdp: m.sdp}).catch(function () { setNet("Call error. Try again."); });
+    }
+  } else if (m.t === "ce") {
+    endCall(true); setNet("Call ended.");
+  } else if (m.t === "nc") {
+    refundEntry(); stopGame(true);
+    setNet("Your friend does not have enough coins for this arena.");
+  } else if (m.t === "p") {
+    gotPeer(m);
+  } else if (m.t === "x") {
+    stopGame(true);
+  } else if (m.t === "rq") {
+    if (net.me === 0) { target = m.tg; restartGame(); }
+  } else if (m.t === "rs") {
+    if (net.me === 1) {
+      if (!chargeEntry()) { netPost({t: "nc"}); setNet("Not enough coins to play again."); return; }
+      target = m.tg; startGame("online");
+    }
+  }
+}
+
+function createRoom() {
+  unlockAudio();
+  netClose();
+  var code = String(Math.floor(1000 + Math.random() * 9000));
+  net.me = 0; net.topic = "fazcarrom26-" + code; net.code = code;
+  netListen(null);
+  setNet("Room code: " + code + ". Tell your friend to tap Join and type it. Waiting...");
+}
+
+function joinRoom() {
+  unlockAudio();
+  var code = document.getElementById("code").value.trim();
+  if (code.length !== 4) { setNet("Type the 4 digit code first."); return; }
+  netClose();
+  net.me = 1; net.topic = "fazcarrom26-" + code;
+  setNet("Connecting...");
+  netListen(function () {
+    netPost({t: "j"});
+    net.jt = setInterval(function () { if (!net.on) { netPost({t: "j"}); } }, 3000);
+  });
+  setTimeout(function () {
+    if (!net.on) { setNet("No answer yet. Ask your friend to tap Create room first, and check the code."); }
+  }, 10000);
+}
+
+function showChat() { document.getElementById("chat").style.display = "block"; }
+
+var pc = null, callStream = null, callState = "idle", pendingOffer = null;
+var iceServers = [
+  {urls: "stun:stun.l.google.com:19302"},
+  {urls: "stun:stun1.l.google.com:19302"},
+  {urls: ["turn:openrelay.metered.ca:80", "turn:openrelay.metered.ca:443", "turn:openrelay.metered.ca:443?transport=tcp"], username: "openrelayproject", credential: "openrelayproject"}
+];
+
+function callUI(label) { document.getElementById("callbtn").textContent = label; }
+
+function slim(sdp) {
+  var out = [], lines = sdp.split("\r\n");
+  for (var i = 0; i < lines.length; i++) {
+    var l = lines[i];
+    if (l.indexOf("a=candidate") === 0 && (/ tcp /i.test(l) || /candidate:\S+ \d+ \S+ \d+ [0-9a-f]*:[0-9a-f:]+ /i.test(l))) { continue; }
+    out.push(l);
+  }
+  return out.join("\r\n");
+}
+
+function waitIce(p) {
+  return new Promise(function (res) {
+    var done = function () { p.removeEventListener("icegatheringstatechange", chk); res(); };
+    var chk = function () { if (p.iceGatheringState === "complete") { done(); } };
+    if (p.iceGatheringState === "complete") { res(); return; }
+    p.addEventListener("icegatheringstatechange", chk);
+    setTimeout(done, 3500);
+  });
+}
+
+function newPC() {
+  pc = new RTCPeerConnection({iceServers: iceServers});
+  pc.ontrack = function (e) {
+    var a = document.getElementById("remoteAudio");
+    a.srcObject = e.streams[0];
+    a.play().catch(function () {});
+  };
+  pc.oniceconnectionstatechange = function () {
+    var st = pc ? pc.iceConnectionState : "";
+    if (st === "connected" || st === "completed") { callState = "on"; callUI("End call"); setNet("Call connected."); }
+    else if (st === "failed") { setNet("Call could not connect on these networks. Try a WhatsApp call."); endCall(false); }
+  };
+}
+
+function getMic() {
+  return navigator.mediaDevices.getUserMedia({audio: {echoCancellation: true, noiseSuppression: true}});
+}
+
+function callBtn() {
+  if (!net.on) { return; }
+  unlockAudio();
+  if (callState === "idle") { startCall(); }
+  else if (callState === "incoming") { answerCall(); }
+  else { endCall(false); }
+}
+
+function startCall() {
+  if (!window.RTCPeerConnection || !navigator.mediaDevices) { setNet("Calls are not supported on this phone."); return; }
+  callState = "calling"; callUI("Calling... (tap to cancel)");
+  getMic().then(function (stream) {
+    callStream = stream; newPC();
+    stream.getTracks().forEach(function (t) { pc.addTrack(t, stream); });
+    return pc.createOffer().then(function (o) { return pc.setLocalDescription(o); })
+      .then(function () { return waitIce(pc); })
+      .then(function () { netPost({t: "co", sdp: slim(pc.localDescription.sdp)}); });
+  }).catch(function () { setNet("Could not start the call. Allow the microphone."); endCall(false); });
+}
+
+function answerCall() {
+  callState = "answering"; callUI("Connecting...");
+  getMic().then(function (stream) {
+    callStream = stream; newPC();
+    stream.getTracks().forEach(function (t) { pc.addTrack(t, stream); });
+    return pc.setRemoteDescription({type: "offer", sdp: pendingOffer})
+      .then(function () { return pc.createAnswer(); })
+      .then(function (a) { return pc.setLocalDescription(a); })
+      .then(function () { return waitIce(pc); })
+      .then(function () { netPost({t: "ca", sdp: slim(pc.localDescription.sdp)}); });
+  }).catch(function () { setNet("Could not answer the call. Allow the microphone."); endCall(false); });
+}
+
+function endCall(fromRemote) {
+  var was = callState;
+  if (pc) { try { pc.close(); } catch (e) {} pc = null; }
+  if (callStream) { callStream.getTracks().forEach(function (t) { t.stop(); }); callStream = null; }
+  if (!fromRemote && was !== "idle") { netPost({t: "ce"}); }
+  callState = "idle"; pendingOffer = null; callUI("Call");
+}
+
+function ld(k, d) { try { var v = JSON.parse(localStorage.getItem(k)); return v === null ? d : v; } catch (e) { return d; } }
+function sv(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+function randomCode(n) {
+  var ch = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789", out = "";
+  for (var i = 0; i < n; i++) { out += ch.charAt(Math.floor(Math.random() * ch.length)); }
+  return out;
+}
+function userTopic(c) { return "fazcarrom26-u-" + c; }
+
+var me = ld("faz_me", null);
+if (!me || !me.code) { me = {name: "Player", code: randomCode(6)}; sv("faz_me", me); }
+var friends = ld("faz_friends", []);
+
+function netPostTo(topic, m) {
+  try { fetch("https://ntfy.sh/" + topic, {method: "POST", body: JSON.stringify(m)}).catch(function () {}); } catch (e) {}
+}
+
+function renderHome() {
+  document.getElementById("meName").textContent = me.name;
+  document.getElementById("meCode").textContent = me.code;
+  document.getElementById("meCode2").textContent = me.code;
+  document.getElementById("av").textContent = me.name.charAt(0).toUpperCase();
+  updCoins();
+  renderFriends();
+  refreshHome();
+}
+
+function renderFriends() {
+  var box = document.getElementById("flist");
+  box.textContent = "";
+  if (!friends.length) { box.textContent = "No friends yet."; return; }
+  friends.forEach(function (f, i) {
+    var row = document.createElement("div"); row.className = "frow";
+    var nm = document.createElement("span"); nm.textContent = f.name + " (" + f.code + ")";
+    var inv = document.createElement("button"); inv.textContent = "Invite"; inv.onclick = function () { inviteFriend(f); };
+    var rm = document.createElement("button"); rm.textContent = "X";
+    rm.onclick = function () { friends.splice(i, 1); sv("faz_friends", friends); renderFriends(); };
+    row.appendChild(nm); row.appendChild(inv); row.appendChild(rm);
+    box.appendChild(row);
+  });
+}
+
+function editName() {
+  var n = prompt("Your name", me.name);
+  if (n && n.trim()) { me.name = n.trim().slice(0, 14); sv("faz_me", me); renderHome(); }
+}
+
+function copyCode() {
+  try { navigator.clipboard.writeText(me.code); } catch (e) {}
+  alert("Your ID: " + me.code);
+}
+
+function addFriendDirect(n, c, notify) {
+  for (var i = 0; i < friends.length; i++) { if (friends[i].code === c) { return; } }
+  friends.push({name: n.slice(0, 14), code: c});
+  sv("faz_friends", friends);
+  renderFriends();
+  if (notify) { netPostTo(userTopic(c), {t: "fr", name: me.name, code: me.code}); }
+}
+
+function addFriend() {
+  var n = document.getElementById("fname").value.trim();
+  var c = document.getElementById("fcode").value.trim().toUpperCase();
+  if (!n || !/^[A-Z0-9]{6}$/.test(c)) { alert("Type a name and the 6 letter ID."); return; }
+  if (c === me.code) { alert("That is your own ID."); return; }
+  addFriendDirect(n, c, true);
+  document.getElementById("fname").value = ""; document.getElementById("fcode").value = "";
+}
+
+function banner(text, btns) {
+  if (!cfg.notif && document.getElementById("game").style.display !== "none") { return; }
+  var el = document.getElementById("banner");
+  el.textContent = text + " ";
+  btns.forEach(function (b) {
+    var x = document.createElement("button"); x.textContent = b[0]; x.onclick = b[1]; x.style.color = "#000"; x.style.background = "rgba(0,0,0,0.15)";
+    el.appendChild(x);
+  });
+  el.style.display = "block";
+}
+function hideBanner() { document.getElementById("banner").style.display = "none"; }
+
+function handleMe(m) {
+  if (!m) { return; }
+  if (m.t === "inv" && /^\d{4}$/.test(String(m.room))) {
+    if (cfg.fonly && !friends.some(function (f) { return f.code === m.c; })) { return; }
+    banner(String(m.from).slice(0, 14) + " invites you to play.", [["Accept", function () { acceptInvite(String(m.room)); }], ["Later", hideBanner]]);
+  } else if (m.t === "fr" && /^[A-Z0-9]{6}$/.test(String(m.code))) {
+    banner(String(m.name).slice(0, 14) + " added you as a friend.", [["Add back", function () { addFriendDirect(String(m.name), String(m.code), false); hideBanner(); }], ["Close", hideBanner]]);
+  }
+}
+
+function listenMe() {
+  try {
+    var es = new EventSource("https://ntfy.sh/" + userTopic(me.code) + "/sse");
+    es.onmessage = function (ev) {
+      try {
+        var d = JSON.parse(ev.data);
+        if (d.event !== "message") { return; }
+        handleMe(JSON.parse(d.message));
+      } catch (e) {}
+    };
+  } catch (e) {}
+}
+
+function showView(v) {
+  var ids = ["v_home", "v_friends", "v_online", "v_chal", "v_lobby", "v_profile", "v_rules", "v_settings", "v_spin", "v_lucky", "v_equip", "v_events", "v_shop", "v_board"];
+  for (var i = 0; i < ids.length; i++) { document.getElementById(ids[i]).style.display = ids[i] === v ? "block" : "none"; }
+  var hooks = {v_home: refreshHome, v_settings: renderSettings, v_equip: renderEquip, v_events: renderEvents, v_shop: renderShop, v_board: renderBoard, v_spin: renderSpin};
+  if (hooks[v]) { hooks[v](); }
+}
+function showGame() {
+  document.getElementById("bar").style.display = "none";
+  document.getElementById("home").style.display = "none";
+  document.getElementById("game").style.display = "block";
+}
+function goHome() {
+  if (!gameOver && (mode === "cpu" || mode === "online")) { recordGame("loss", true); }
+  try { endCall(false); } catch (e) {}
+  netClose();
+  document.getElementById("chat").style.display = "none";
+  resetArena(); target = 0;
+  startGame("2p");
+  document.getElementById("game").style.display = "none";
+  document.getElementById("home").style.display = "block";
+  showView("v_home");
+}
+function playCpu(t) { target = t || 0; showGame(); startGame("cpu"); }
+function playLocal(m) { target = 0; resetArena(); showGame(); startGame(m); }
+function pickTarget(n) {
+  target = n;
+  var ids = [0, 160, 210];
+  for (var i = 0; i < ids.length; i++) { document.getElementById("pt_" + ids[i]).className = ids[i] === n ? "on" : ""; }
+}
+function onlineCreate() { showGame(); createRoom(); }
+function onlineJoin() {
+  var c = document.getElementById("hcode").value.trim();
+  document.getElementById("code").value = c;
+  showGame(); joinRoom();
+}
+function inviteFriend(f) { openLobby("online", "bw", f); }
+function acceptInvite(room) {
+  hideBanner();
+  document.getElementById("code").value = room;
+  showGame(); joinRoom();
+}
+
+var coinsTotal = ld("faz_coins", 1500);
+
+function toggleBar() {
+  var b = document.getElementById("bar");
+  b.style.display = b.style.display === "none" ? "block" : "none";
+}
+
+function awardWin() {
+  var mine = (mode === "cpu" && winIdx === 0) || (mode === "online" && winIdx === net.me);
+  if (mode === "cpu" || mode === "online") { recordGame(mine ? "win" : "loss", false); }
+  else { stats.lg++; sv("faz_stats", stats); }
+  if (!mine) {
+    if (arenaFee > 0 && (mode === "cpu" || mode === "online")) { setNet("You lost. Entry fee " + arenaFee + " coins."); }
+    return;
+  }
+  if (arenaFee > 0) { addChest(arenaFee >= 50000 ? "gold" : (arenaFee >= 1100 ? "silver" : "bronze")); }
+  if (!arenaPrize) { return; }
+  coinsTotal += arenaPrize;
+  sv("faz_coins", coinsTotal);
+  updCoins();
+  setNet("You won " + fmt(arenaPrize) + " gold coins!");
+}
+
+function sendProfile() { netPost({t: "p", name: me.name, code: me.code}); }
+
+function refreshAddBtn() {
+  var box = document.getElementById("addf");
+  if (!net.peer) { box.style.display = "none"; return; }
+  for (var i = 0; i < friends.length; i++) {
+    if (friends[i].code === net.peer.code) { box.style.display = "none"; return; }
+  }
+  document.getElementById("addfbtn").textContent = "Add " + net.peer.name + " as friend";
+  box.style.display = "block";
+}
+
+function gotPeer(m) {
+  var c = String(m.code);
+  if (!/^[A-Z0-9]{6}$/.test(c) || c === me.code) { return; }
+  net.peer = {name: String(m.name).slice(0, 14), code: c};
+  refreshAddBtn();
+}
+
+function addPeerFriend() {
+  if (!net.peer) { return; }
+  addFriendDirect(net.peer.name, net.peer.code, true);
+  refreshAddBtn();
+}
+
+var arenas = [
+  {n: "Practice", ic: "\uD83C\uDFAF", fee: 0, prize: 20, pc: 9, ft: 160},
+  {n: "London", ic: "\uD83C\uDFA1", fee: 250, prize: 400, pc: 9, ft: 160},
+  {n: "India", ic: "\uD83D\uDD4C", fee: 550, prize: 1000, pc: 9, ft: 160},
+  {n: "Dubai", ic: "\uD83C\uDFD9\uFE0F", fee: 1100, prize: 2000, pc: 9, ft: 210},
+  {n: "Paris", ic: "\uD83D\uDDFC", fee: 5000, prize: 9000, pc: 9, ft: 210},
+  {n: "New York", ic: "\uD83D\uDDFD", fee: 10000, prize: 18000, pc: 9, ft: 210},
+  {n: "Tokyo", ic: "\u26E9\uFE0F", fee: 50000, prize: 90000, pc: 9, ft: 210},
+  {n: "Egypt", ic: "\uD83D\uDC2A", fee: 250000, prize: 450000, pc: 9, ft: 210},
+  {n: "Monaco", ic: "\uD83D\uDC8E", fee: 500000, prize: 900000, pc: 9, ft: 210}
+];
+
+function fmt(n) { return Number(n).toLocaleString("en-US"); }
+var lobbyMode = "cpu", lobbyType = "bw", lobbyQueen = true, lobbyIdx = 1, lobbyInvite = null;
+
+function updCoins() {
+  var gm = document.getElementById("meGems"); if (gm) { gm.textContent = fmt(gems); }
+  var ids = ["meCoins", "lobCoins"];
+  for (var i = 0; i < ids.length; i++) { var e = document.getElementById(ids[i]); if (e) { e.textContent = fmt(coinsTotal); } }
+}
+
+function chargeEntry() {
+  if (arenaFee > coinsTotal) { return false; }
+  coinsTotal -= arenaFee; sv("faz_coins", coinsTotal); updCoins();
+  return true;
+}
+function refundEntry() { coinsTotal += arenaFee; sv("faz_coins", coinsTotal); updCoins(); }
+function resetArena() { perSide = 9; queenOn = true; arenaFee = 0; arenaPrize = 0; arenaName = ""; }
+function settingsMsg() { return {t: "i", tg: target, pc: perSide, qn: queenOn ? 1 : 0, fee: arenaFee, prz: arenaPrize, an: arenaName}; }
+
+function freeCoinsOld() {
+  var today = new Date().toDateString();
+  if (ld("faz_free", "") === today) { alert("Come back tomorrow for more free coins."); return; }
+  sv("faz_free", today);
+  coinsTotal += 500; sv("faz_coins", coinsTotal); updCoins();
+  alert("You got 500 free coins!");
+}
+
+function renderLobby() {
+  var box = document.getElementById("arenas");
+  box.textContent = "";
+  arenas.forEach(function (a, i) {
+    var c = document.createElement("div");
+    c.className = "acard" + (i === lobbyIdx ? " sel" : "");
+    c.onclick = function () { lobbyIdx = i; renderLobby(); };
+    var rule = lobbyType === "free" ? "Freestyle: first to " + a.ft + " points" : "Rule: " + a.pc + " Puck Carrom";
+    var gc = '<span class="gcoin"></span> ';
+    var parts = [["sky", a.ic], ["nm", a.n.toUpperCase()], ["box prz", "WIN PRIZE<br>" + gc + fmt(a.prize)], ["box", "Entry fee: " + gc + fmt(a.fee)], ["", rule]];
+    var need = a.fee - coinsTotal;
+    if (need > 0) { c.className += " lock"; parts.push(["lockmsg", "Need " + fmt(need) + " more coins"]); }
+    parts.forEach(function (pt) {
+      var d = document.createElement("div"); d.className = pt[0]; d.innerHTML = pt[1]; c.appendChild(d);
+    });
+    box.appendChild(c);
+  });
+  document.getElementById("lt_bw").className = "mt" + (lobbyType === "bw" ? " sel" : "");
+  document.getElementById("lt_free").className = "mt" + (lobbyType === "free" ? " sel" : "");
+  document.getElementById("q_no").className = lobbyQueen ? "" : "on";
+  document.getElementById("q_yes").className = lobbyQueen ? "on" : "";
+  document.getElementById("lm_cpu").className = lobbyMode === "cpu" ? "on" : "";
+  document.getElementById("lm_on").className = lobbyMode === "online" ? "on" : "";
+  updCoins();
+}
+
+function openLobby(mode, type, inv) {
+  lobbyMode = mode; lobbyType = type || "bw"; lobbyInvite = inv || null;
+  renderLobby();
+  showView("v_lobby");
+  try { document.getElementById("arenas").children[lobbyIdx].scrollIntoView({inline: "center", block: "nearest"}); } catch (e) {}
+}
+function pickType(t) { lobbyType = t; renderLobby(); }
+function pickQueen(q) { lobbyQueen = q; renderLobby(); }
+
+function lobbyPlay() {
+  var a = arenas[lobbyIdx];
+  if (coinsTotal < a.fee) { alert("Not enough coins. Tap Free coins or win some games."); return; }
+  perSide = a.pc; queenOn = lobbyQueen; target = lobbyType === "free" ? a.ft : 0;
+  arenaFee = a.fee; arenaPrize = a.prize; arenaName = a.n;
+  if (lobbyMode === "cpu") {
+    chargeEntry();
+    showGame(); startGame("cpu");
+    setNet(a.n + ": entry " + fmt(a.fee) + " coins, win " + fmt(a.prize) + " coins.");
+  } else {
+    showGame(); createRoom();
+    if (lobbyInvite) {
+      netPostTo(userTopic(lobbyInvite.code), {t: "inv", from: me.name, room: net.code, c: me.code});
+      setNet("Invitation sent to " + lobbyInvite.name + ". Room code: " + net.code + ". Waiting...");
+      lobbyInvite = null;
+    }
+  }
+}
+
+var statsDone = false;
+var stats = ld("faz_stats", null);
+if (!stats || typeof stats !== "object") { stats = {}; }
+["g", "w", "l", "cg", "cw", "og", "ow", "lg"].forEach(function (k) { if (typeof stats[k] !== "number") { stats[k] = 0; } });
+if (!Array.isArray(stats.log)) { stats.log = []; }
+if (!stats.opp || typeof stats.opp !== "object") { stats.opp = {}; }
+
+function recordGame(res, quit) {
+  if (statsDone) { return; }
+  statsDone = true;
+  var win = res === "win";
+  stats.g++;
+  if (win) { stats.w++; } else { stats.l++; }
+  var oname = "Computer";
+  if (mode === "cpu") { stats.cg++; if (win) { stats.cw++; } }
+  else {
+    stats.og++; if (win) { stats.ow++; }
+    oname = net.peer ? net.peer.name : "Friend";
+    if (net.peer) {
+      var o = stats.opp[net.peer.code] || {n: net.peer.name, g: 0, w: 0};
+      o.n = net.peer.name; o.g++; if (win) { o.w++; }
+      stats.opp[net.peer.code] = o;
+    }
+  }
+  var delta = win ? (arenaPrize - arenaFee) : -arenaFee;
+  stats.log.unshift({t: Date.now(), m: mode, o: oname, a: arenaName || (target ? "Freestyle " + target : "Classic"), r: res, q: quit ? 1 : 0, c: delta});
+  if (stats.log.length > 30) { stats.log.length = 30; }
+  sv("faz_stats", stats);
+}
+
+function rowText(parent, text, btnLabel, fn) {
+  var row = document.createElement("div"); row.className = "frow";
+  var sp = document.createElement("span"); sp.textContent = text; row.appendChild(sp);
+  if (btnLabel) { var b = document.createElement("button"); b.textContent = btnLabel; b.onclick = fn; row.appendChild(b); }
+  parent.appendChild(row);
+}
+
+function renderProfile() {
+  document.getElementById("pName").textContent = me.name;
+  document.getElementById("pCode").textContent = me.code;
+  document.getElementById("pav").textContent = me.name.charAt(0).toUpperCase();
+  document.getElementById("pCoins").textContent = fmt(coinsTotal);
+  document.getElementById("st_g").textContent = stats.g;
+  document.getElementById("st_w").textContent = stats.w;
+  document.getElementById("st_l").textContent = stats.l;
+  document.getElementById("st_p").textContent = (stats.g ? Math.round(100 * stats.w / stats.g) : 0) + "%";
+  document.getElementById("st_modes").textContent =
+    "vs Computer: " + stats.cw + " wins of " + stats.cg + "  |  Online: " + stats.ow + " wins of " + stats.og + "  |  Same phone games: " + stats.lg;
+  var opp = document.getElementById("pOpp"); opp.textContent = "";
+  var codes = Object.keys(stats.opp).sort(function (a, b) { return stats.opp[b].g - stats.opp[a].g; });
+  if (!codes.length) { opp.textContent = "Nobody yet. Play online with a friend."; }
+  codes.forEach(function (c) {
+    var o = stats.opp[c], isF = false;
+    for (var i = 0; i < friends.length; i++) { if (friends[i].code === c) { isF = true; } }
+    rowText(opp, o.n + ": " + o.g + " games, " + o.w + " wins", isF ? "" : "Add friend", function () { addFriendDirect(o.n, c, true); renderProfile(); });
+  });
+  document.getElementById("pFc").textContent = friends.length;
+  var fr = document.getElementById("pFr"); fr.textContent = "";
+  if (!friends.length) { fr.textContent = "No friends yet."; }
+  friends.forEach(function (f) {
+    var g = stats.opp[f.code];
+    rowText(fr, f.name + " (" + f.code + ")" + (g ? " - played " + g.g : ""), "", null);
+  });
+  var lg = document.getElementById("pLog"); lg.textContent = "";
+  if (!stats.log.length) { lg.textContent = "No matches yet."; }
+  stats.log.slice(0, 10).forEach(function (e) {
+    var d = new Date(e.t);
+    var who = e.m === "cpu" ? "Computer" : e.o;
+    rowText(lg, d.toLocaleDateString() + " " + (e.r === "win" ? "WON" : "LOST") + (e.q ? " (left)" : "") + " vs " + who + " - " + e.a + " (" + (e.c >= 0 ? "+" : "") + fmt(e.c) + ")", "", null);
+  });
+}
+
+function openProfile() { renderProfile(); showView("v_profile"); }
+
+function doBackup() {
+  var t = document.getElementById("bk");
+  t.value = JSON.stringify({me: me, friends: friends, coins: coinsTotal, stats: stats});
+  try { t.select(); } catch (e) {}
+}
+
+function doRestore() {
+  var t = document.getElementById("bk");
+  try {
+    var d = JSON.parse(t.value);
+    if (!d || !d.me || !/^[A-Z0-9]{6}$/.test(String(d.me.code))) { throw 1; }
+    me = {name: String(d.me.name).slice(0, 14), code: d.me.code}; sv("faz_me", me);
+    friends = Array.isArray(d.friends) ? d.friends : []; sv("faz_friends", friends);
+    coinsTotal = Number(d.coins) || 0; sv("faz_coins", coinsTotal);
+    if (d.stats && typeof d.stats === "object") { stats = d.stats; sv("faz_stats", stats); }
+    renderHome(); renderProfile();
+    alert("Restored. Reload the page to use your old ID for invites.");
+  } catch (e) { alert("That backup text is not valid."); }
+}
+
+var fxs = [];
+var gems = ld("faz_gems", 20);
+var cfg = ld("faz_cfg", null);
+if (!cfg || typeof cfg !== "object") { cfg = {}; }
+var cfgDef = {snd: true, vib: false, fonly: false, notif: true, fx: true};
+Object.keys(cfgDef).forEach(function (k) { if (typeof cfg[k] !== "boolean") { cfg[k] = cfgDef[k]; } });
+soundOn = cfg.snd;
+var skins = [
+  {n: "Classic", p: 0, a: "#3a3a3a", b: "#050505", e: "#000000", pat: "#f2f2f2"},
+  {n: "Ruby", p: 500, a: "#ff6a5a", b: "#7a0d0d", e: "#4a0505", pat: "#ffe3dc"},
+  {n: "Ocean", p: 800, a: "#5aa0ff", b: "#0b2a7a", e: "#061a4a", pat: "#e0eeff"},
+  {n: "Emerald", p: 1500, a: "#4fd08a", b: "#0a5a34", e: "#043a20", pat: "#e2fff0"},
+  {n: "Gold", p: 2500, a: "#ffe066", b: "#a86a00", e: "#6a4300", pat: "#fff8dc"}
+];
+var owned = ld("faz_skins", [0]), equip = ld("faz_equip", 0);
+var chests = ld("faz_chests", [null, null, null, null]);
+var CH = {bronze: {ms: 60000, c: [300, 800], g: [1, 2]}, silver: {ms: 180000, c: [1000, 2500], g: [2, 4]}, gold: {ms: 300000, c: [3000, 8000], g: [5, 10]}};
+
+function today() { return new Date().toDateString(); }
+function daily(key) { if (ld(key, "") === today()) { return false; } sv(key, today()); return true; }
+function saveAll() { sv("faz_gems", gems); sv("faz_coins", coinsTotal); sv("faz_cfg", cfg); updCoins(); }
+function rnd(r) { return r[0] + Math.floor(Math.random() * (r[1] - r[0] + 1)); }
+function grant(r) {
+  if (r[0] === "c") { coinsTotal += r[1]; } else { gems += r[1]; }
+  saveAll();
+  return fmt(r[1]) + (r[0] === "c" ? " coins" : " gems");
+}
+function pickW(list) {
+  var t = 0, i; for (i = 0; i < list.length; i++) { t += list[i][2]; }
+  var r = Math.random() * t;
+  for (i = 0; i < list.length; i++) { r -= list[i][2]; if (r <= 0) { return i; } }
+  return 0;
+}
+
+function collectFree() {
+  if (!daily("faz_free")) { alert("Come back tomorrow for more free rewards."); return; }
+  coinsTotal += 500; gems += 2; saveAll(); refreshHome();
+  alert("You got 500 coins and 2 gems!");
+}
+function freeCoins() { collectFree(); }
+
+function refreshHome() {
+  var l = document.getElementById("freeLbl");
+  if (l) { l.textContent = ld("faz_free", "") === today() ? "Come back tomorrow" : "Collect Now!"; }
+  updCoins(); renderChests();
+}
+
+function addChest(type) {
+  for (var i = 0; i < 4; i++) { if (!chests[i]) { chests[i] = {t: type, at: Date.now() + CH[type].ms}; sv("faz_chests", chests); return true; } }
+  return false;
+}
+function renderChests() {
+  var box = document.getElementById("chests");
+  if (!box) { return; }
+  box.textContent = "";
+  for (var i = 0; i < 4; i++) {
+    (function (i) {
+      var d = document.createElement("div"); d.className = "slot";
+      var c = chests[i];
+      if (!c) { d.textContent = "Chest Slot"; }
+      else if (Date.now() < c.at) {
+        var sec = Math.ceil((c.at - Date.now()) / 1000);
+        d.textContent = c.t + " chest " + Math.floor(sec / 60) + ":" + ("0" + (sec % 60)).slice(-2);
+      } else {
+        d.textContent = c.t + " chest ";
+        var b = document.createElement("button"); b.textContent = "Open"; b.onclick = function () { openChest(i); }; d.appendChild(b);
+      }
+      box.appendChild(d);
+    })(i);
+  }
+}
+function openChest(i) {
+  var c = chests[i]; if (!c || Date.now() < c.at) { return; }
+  var t1 = grant(["c", rnd(CH[c.t].c)]), t2 = grant(["g", rnd(CH[c.t].g)]);
+  chests[i] = null; sv("faz_chests", chests); renderChests();
+  alert("Chest opened: " + t1 + " and " + t2 + "!");
+}
+setInterval(function () {
+  var h = document.getElementById("home"), v = document.getElementById("v_home");
+  if (h && h.style.display !== "none" && v && v.style.display !== "none") { renderChests(); }
+}, 1000);
+
+var wheel = [["c", 100, 30], ["g", 1, 15], ["c", 250, 20], ["c", 500, 12], ["g", 2, 10], ["c", 1000, 5], ["c", 250, 5], ["g", 5, 3]];
+function renderSpin() {
+  var t = "Prizes from the top, clockwise: ";
+  t += wheel.map(function (w) { return w[1] + (w[0] === "c" ? " coins" : " gems"); }).join(", ");
+  document.getElementById("spinLegend").textContent = t + ". One free spin every day.";
+}
+function doSpin() {
+  if (!daily("faz_spin")) { alert("Your free spin is used. Come back tomorrow."); return; }
+  var idx = pickW(wheel);
+  var deg = 360 * 5 + (360 - (idx * 45 + 22.5));
+  document.getElementById("wheel").style.transform = "rotate(" + deg + "deg)";
+  setTimeout(function () { alert("You won " + grant(wheel[idx]) + "!"); }, 3200);
+}
+
+var luckyPrizes = [["c", 3500, 40], ["c", 7500, 25], ["c", 10000, 10], ["g", 20, 5], ["g", 8, 20]];
+function pickBox() {
+  if (!daily("faz_lucky")) { alert("Lucky Shot used today. Come back tomorrow."); return; }
+  alert("You won " + grant(luckyPrizes[pickW(luckyPrizes)]) + "!");
+}
+
+function renderSettings() {
+  var box = document.getElementById("cfgList"); box.textContent = "";
+  [["Sound Effects", "snd"], ["Vibration", "vib"], ["Get challenges from friends only", "fonly"], ["Show notifications while playing", "notif"], ["Show pocket effects", "fx"]].forEach(function (it) {
+    var row = document.createElement("div"); row.className = "frow";
+    var sp = document.createElement("span"); sp.textContent = it[0]; row.appendChild(sp);
+    var b = document.createElement("button"); b.className = "tg" + (cfg[it[1]] ? " on" : ""); b.textContent = cfg[it[1]] ? "ON" : "OFF";
+    b.onclick = function () { cfg[it[1]] = !cfg[it[1]]; if (it[1] === "snd") { soundOn = cfg.snd; unlockAudio(); } saveAll(); renderSettings(); };
+    row.appendChild(b); box.appendChild(row);
+  });
+}
+
+function renderEquip() {
+  var box = document.getElementById("eqList"); box.textContent = "";
+  skins.forEach(function (k, i) {
+    var row = document.createElement("div"); row.className = "frow";
+    var sp = document.createElement("span");
+    var dot = document.createElement("span"); dot.className = "skin"; dot.style.background = "radial-gradient(circle at 35% 30%," + k.a + "," + k.b + ")";
+    sp.appendChild(dot); sp.appendChild(document.createTextNode(k.n)); row.appendChild(sp);
+    var b = document.createElement("button");
+    if (owned.indexOf(i) >= 0) { b.textContent = equip === i ? "Equipped" : "Equip"; b.onclick = function () { equip = i; sv("faz_equip", i); renderEquip(); }; }
+    else { b.textContent = "Buy " + fmt(k.p); b.onclick = function () {
+      if (coinsTotal < k.p) { alert("Not enough coins."); return; }
+      coinsTotal -= k.p; owned.push(i); equip = i; sv("faz_skins", owned); sv("faz_equip", i); saveAll(); renderEquip();
+    }; }
+    row.appendChild(b); box.appendChild(row);
+  });
+}
+
+function renderShop() {
+  var box = document.getElementById("shopList"); box.textContent = "";
+  [[5, 2500], [20, 12000], [75, 50000]].forEach(function (o) {
+    var row = document.createElement("div"); row.className = "frow";
+    var sp = document.createElement("span"); sp.textContent = o[0] + " gems = " + fmt(o[1]) + " coins"; row.appendChild(sp);
+    var b = document.createElement("button"); b.textContent = "Swap";
+    b.onclick = function () { if (gems < o[0]) { alert("Not enough gems."); return; } gems -= o[0]; coinsTotal += o[1]; saveAll(); renderShop(); };
+    row.appendChild(b); box.appendChild(row);
+  });
+  rowText(box, "You have " + fmt(gems) + " gems", "", null);
+}
+
+function renderEvents() {
+  var box = document.getElementById("evList"); box.textContent = "";
+  var td = today(), wins = 0, games = 0;
+  stats.log.forEach(function (e) { if (new Date(e.t).toDateString() === td) { games++; if (e.r === "win") { wins++; } } });
+  var claimed = ld("faz_ev", {}); if (claimed.d !== td) { claimed = {d: td}; }
+  [["e1", "Win 3 games today", wins, 3, 1000, 3], ["e2", "Play 5 games today", games, 5, 500, 1]].forEach(function (ev) {
+    var done = ev[2] >= ev[3], got = !!claimed[ev[0]];
+    rowText(box, ev[1] + " (" + Math.min(ev[2], ev[3]) + "/" + ev[3] + ") - " + fmt(ev[4]) + " coins, " + ev[5] + " gems", got ? "Claimed" : (done ? "Claim" : ""), function () {
+      if (got || !done) { return; }
+      claimed[ev[0]] = 1; sv("faz_ev", claimed); coinsTotal += ev[4]; gems += ev[5]; saveAll(); renderEvents();
+    });
+  });
+}
+
+function renderBoard() {
+  var box = document.getElementById("boardList"); box.textContent = "";
+  rowText(box, "You (" + me.name + "): " + stats.w + " wins of " + stats.g + " games", "", null);
+  Object.keys(stats.opp).sort(function (a, b) { return stats.opp[b].w - stats.opp[a].w; }).forEach(function (c) {
+    var o = stats.opp[c]; rowText(box, "You vs " + o.n + ": " + o.w + " wins of " + o.g, "", null);
+  });
+}
+
+function startMode(kind) {
+  lobbyQueen = kind !== "disc";
+  openLobby(lobbyMode, kind === "free" ? "free" : "bw");
+}
+function pickOpp(m) { lobbyMode = m; renderLobby(); }
+
+function setTarget(n) { target = n; restartGame(); }
+
+function restartGame() {
+  if (mode === "online" && net.on) {
+    if (net.me === 1) { netPost({t: "rq", tg: target}); setNet("Asked the host to restart."); }
+    else {
+      if (!chargeEntry()) { setNet("Not enough coins to play again."); return; }
+      startGame("online"); netPost({t: "rs", tg: target});
+    }
+  } else {
+    if (!chargeEntry()) { alert("Not enough coins to play again."); goHome(); return; }
+    startGame(mode);
+  }
+}
+
+function fire(vx, vy, remote) {
+  shooter = remote ? 1 - net.me : net.me;
+  net.shots++;
+  if (!remote && mode === "online") { netPost({t: "shot", sx: strikerX, vx: vx, vy: vy}); }
+  striker.vx = vx; striker.vy = vy;
+  moving = true;
+  showStatus("");
+  slider.disabled = true;
+}
+
+function segDist(px, py, ax, ay, bx, by) {
+  var dx = bx - ax, dy = by - ay, l2 = dx * dx + dy * dy;
+  var t = l2 ? ((px - ax) * dx + (py - ay) * dy) / l2 : 0;
+  t = Math.max(0, Math.min(1, t));
+  var qx = ax + t * dx - px, qy = ay + t * dy - py;
+  return Math.sqrt(qx * qx + qy * qy);
+}
+
+function blocked(ax, ay, bx, by, skip, clear) {
+  for (var i = 0; i < coins.length; i++) {
+    if (coins[i] !== skip && segDist(coins[i].x, coins[i].y, ax, ay, bx, by) < clear) { return true; }
+  }
+  return false;
+}
+
+function cpuShot() {
+  cpuBusy = false;
+  if (moving || gameOver || !isCpuTurn()) { return; }
+  var mine = myColor(), best = null, bestScore = -1e9, i;
+  var targets = [];
+  for (i = 0; i < coins.length; i++) { if (target || coins[i].color === mine) { targets.push(coins[i]); } }
+  if (!targets.length || (!target && queenOn && queenState === 0 && counts[turn % 2] > 0 && Math.random() < 0.25)) {
+    for (i = 0; i < coins.length; i++) { if (coins[i].color === "#d62828") { targets.push(coins[i]); } }
+  }
+  if (!targets.length) { targets = coins.slice(); }
+  var sy = 68;
+  for (var t = 0; t < targets.length; t++) {
+    var c = targets[t];
+    for (var pk = 0; pk < pockets.length; pk++) {
+      var ux = pockets[pk][0] - c.x, uy = pockets[pk][1] - c.y;
+      var d2 = Math.sqrt(ux * ux + uy * uy); ux /= d2; uy /= d2;
+      var gx = c.x - ux * (c.r + striker.r), gy = c.y - uy * (c.r + striker.r);
+      if (gx < 20 || gx > 380 || gy < 20 || gy > 380) { continue; }
+      if (blocked(c.x, c.y, pockets[pk][0], pockets[pk][1], c, 22)) { continue; }
+      for (var sx = 100; sx <= 300; sx += 20) {
+        var vx = gx - sx, vy = gy - sy, d1 = Math.sqrt(vx * vx + vy * vy);
+        var cosA = (vx * ux + vy * uy) / d1;
+        if (cosA < 0.35) { continue; }
+        if (blocked(sx, sy, gx, gy, c, striker.r + 12)) { continue; }
+        var sc = cosA * 100 - d1 * 0.1 - d2 * 0.15;
+        if (sc > bestScore) { bestScore = sc; best = {sx: sx, vx: vx, vy: vy, d1: d1, d2: d2, cosA: cosA}; }
+      }
+    }
+  }
+  if (!best) {
+    var c0 = targets[Math.floor(Math.random() * targets.length)];
+    var sx0 = 100 + Math.floor(Math.random() * 11) * 20;
+    var fx = c0.x - sx0, fy = c0.y - sy;
+    best = {sx: sx0, vx: fx, vy: fy, d1: Math.sqrt(fx * fx + fy * fy), d2: 150, cosA: 0.8};
+  }
+  strikerX = best.sx; slider.value = best.sx; placeStriker();
+  var ang = Math.atan2(best.vy, best.vx) + (Math.random() - 0.5) * 0.06;
+  var spd = Math.max(7, Math.min(22, 0.025 * best.d1 + 0.025 * best.d2 / (1.2 * best.cosA) + 3));
+  fire(Math.cos(ang) * spd, Math.sin(ang) * spd);
+}
+
+function addCoin(deg, dist, color) {
+  var a = deg * Math.PI / 180;
+  coins.push({
+    x: 200 + dist * Math.cos(a),
+    y: 200 + dist * Math.sin(a),
+    vx: 0, vy: 0, r: 12.35, m: 1,
+    color: color
+  });
+}
+
+function buildCoins() {
+  coins = queenOn ? [{x: 200, y: 200, vx: 0, vy: 0, r: 12.35, m: 1, color: "#d62828"}] : [];
+  var gap = 25.5;
+  for (var i = 0; i < 6; i++) {
+    addCoin(-90 + 60 * i, gap, i % 2 === 0 ? "#f5f5f5" : "#222222");
+  }
+  for (var k = 0; k < 12; k++) {
+    if (perSide === 6 && [0, 1, 4, 5, 8, 9].indexOf(k) < 0) { continue; }
+    addCoin(-90 + 30 * k, k % 2 === 0 ? gap * 2 : gap * Math.sqrt(3), k % 2 === 0 ? "#222222" : "#f5f5f5");
+  }
+}
+
+function circle(x, y, r, fill) {
+  ctx.beginPath();
+  ctx.arc(x, y, r, 0, Math.PI * 2);
+  ctx.fillStyle = fill;
+  ctx.fill();
+}
+
+var shades = {"#f5f5f5": ["#f9d98c", "#c28a3c"], "#222222": ["#4a4a4a", "#000000"], "#d62828": ["#ff7a66", "#a01a10"]};
+
+function disc(x, y, r, c1, c2) {
+  ctx.beginPath();
+  ctx.arc(x + 3, y + 6, r, 0, Math.PI * 2);
+  ctx.fillStyle = "rgba(0,0,0,0.35)";
+  ctx.fill();
+  circle(x, y + 4, r, c2);
+  var g = ctx.createRadialGradient(x - r * 0.35, y - r * 0.35, r * 0.1, x, y, r);
+  g.addColorStop(0, c1);
+  g.addColorStop(1, c2);
+  circle(x, y, r, g);
+  for (var f = 0.9; f > 0.1; f -= 0.18) {
+    ctx.beginPath();
+    ctx.arc(x, y, r * f, 0, Math.PI * 2);
+    ctx.strokeStyle = "rgba(0,0,0,0.38)";
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(x + 0.6, y + 0.6, r * f, 0, Math.PI * 2);
+    ctx.strokeStyle = "rgba(255,255,255,0.25)";
+    ctx.lineWidth = 0.8;
+    ctx.stroke();
+  }
+  ctx.beginPath();
+  ctx.arc(x - r * 0.35, y - r * 0.4, r * 0.2, 0, Math.PI * 2);
+  ctx.fillStyle = "rgba(255,255,255,0.55)";
+  ctx.fill();
+}
+
+var boardImg = null;
+
+function arrowHead(g, x, y, dx, dy, size) {
+  var a = Math.atan2(dy, dx);
+  g.beginPath();
+  g.moveTo(x, y);
+  g.lineTo(x - size * Math.cos(a - 0.45), y - size * Math.sin(a - 0.45));
+  g.moveTo(x, y);
+  g.lineTo(x - size * Math.cos(a + 0.45), y - size * Math.sin(a + 0.45));
+  g.stroke();
+}
+
+function cornerDesign(g) {
+  g.strokeStyle = "#111"; g.lineWidth = 1;
+  g.beginPath(); g.moveTo(44, 44); g.lineTo(145, 145); g.stroke();
+  arrowHead(g, 44, 44, -0.707, -0.707, 7);
+  g.beginPath(); g.moveTo(139, 151); g.lineTo(151, 139); g.stroke();
+  g.beginPath(); g.arc(76, 76, 3.2, 0, Math.PI * 2);
+  g.fillStyle = "#f1e3b8"; g.fill(); g.stroke();
+  var cx = 132, cy = 130, r = 18;
+  var a0 = 80 * Math.PI / 180, a1 = 370 * Math.PI / 180;
+  g.beginPath(); g.arc(cx, cy, r, a0, a1); g.stroke();
+  arrowHead(g, cx + r * Math.cos(a1), cy + r * Math.sin(a1), -Math.sin(a1), Math.cos(a1), 6);
+  arrowHead(g, cx + r * Math.cos(a0), cy + r * Math.sin(a0), Math.sin(a0), -Math.cos(a0), 6);
+}
+
+function star(g) {
+  g.strokeStyle = "#111"; g.lineWidth = 1;
+  g.beginPath(); g.arc(200, 200, 46, 0, Math.PI * 2); g.stroke();
+  var k, a, L;
+  for (k = 0; k < 8; k++) {
+    a = (22.5 + 45 * k) * Math.PI / 180; L = 30;
+    g.beginPath();
+    g.moveTo(200 + L * Math.cos(a), 200 + L * Math.sin(a));
+    g.lineTo(200 + 9 * Math.cos(a - 0.4), 200 + 9 * Math.sin(a - 0.4));
+    g.lineTo(200 + 9 * Math.cos(a + 0.4), 200 + 9 * Math.sin(a + 0.4));
+    g.closePath();
+    g.fillStyle = "#f4ead0"; g.fill(); g.lineWidth = 0.8; g.stroke();
+  }
+  for (k = 0; k < 8; k++) {
+    a = 45 * k * Math.PI / 180; L = 44;
+    g.beginPath();
+    g.moveTo(200 + L * Math.cos(a), 200 + L * Math.sin(a));
+    g.lineTo(200 + 11 * Math.cos(a - 0.38), 200 + 11 * Math.sin(a - 0.38));
+    g.lineTo(200 + 11 * Math.cos(a + 0.38), 200 + 11 * Math.sin(a + 0.38));
+    g.closePath();
+    g.fillStyle = (k % 2 === 0) ? "#b5262b" : "#111111";
+    g.fill();
+  }
+  g.beginPath(); g.arc(200, 200, 9, 0, Math.PI * 2);
+  g.fillStyle = "#b5262b"; g.fill();
+  g.strokeStyle = "#111"; g.lineWidth = 1.5; g.stroke();
+}
+
+function buildBoard() {
+  var b = document.createElement("canvas");
+  b.width = 400; b.height = 400;
+  var g = b.getContext("2d");
+  var base = g.createLinearGradient(0, 0, 400, 400);
+  base.addColorStop(0, "#f2e5bb");
+  base.addColorStop(0.5, "#ecd9a4");
+  base.addColorStop(1, "#e3cd92");
+  g.fillStyle = base;
+  g.fillRect(0, 0, 400, 400);
+  for (var y = -20; y < 420; y += 7) {
+    var a = 0.05 + 0.06 * Math.abs(Math.sin(y * 0.21));
+    g.strokeStyle = "rgba(150,110,50," + a + ")";
+    g.lineWidth = 0.8 + Math.abs(Math.sin(y * 0.13));
+    g.beginPath();
+    g.moveTo(0, y);
+    for (var x = 0; x <= 400; x += 10) {
+      g.lineTo(x, y + Math.sin(x * 0.018 + y * 0.09) * 14 + Math.sin(x * 0.05 + y) * 2);
+    }
+    g.stroke();
+  }
+  var gl = g.createRadialGradient(60, 200, 5, 60, 200, 110);
+  gl.addColorStop(0, "rgba(255,255,240,0.45)");
+  gl.addColorStop(1, "rgba(255,255,240,0)");
+  g.fillStyle = gl; g.fillRect(0, 0, 400, 400);
+  var gl2 = g.createRadialGradient(350, 210, 5, 350, 210, 80);
+  gl2.addColorStop(0, "rgba(255,255,240,0.3)");
+  gl2.addColorStop(1, "rgba(255,255,240,0)");
+  g.fillStyle = gl2; g.fillRect(0, 0, 400, 400);
+
+  star(g);
+  for (var s4 = 0; s4 < 4; s4++) {
+    g.save();
+    g.translate(200, 200); g.rotate(s4 * Math.PI / 2); g.translate(-200, -200);
+    g.strokeStyle = "#111";
+    g.lineWidth = 2.6;
+    g.beginPath(); g.moveTo(86, 59.5); g.lineTo(314, 59.5); g.stroke();
+    g.lineWidth = 1;
+    g.beginPath(); g.moveTo(86, 76.5); g.lineTo(314, 76.5); g.stroke();
+    var ends = [86, 314];
+    for (var e = 0; e < 2; e++) {
+      g.beginPath(); g.arc(ends[e], 68, 8.5, 0, Math.PI * 2);
+      g.fillStyle = "#b5262b"; g.fill();
+      g.lineWidth = 2.4; g.strokeStyle = "#111"; g.stroke();
+    }
+    g.save();
+    g.translate(200, 68);
+    g.rotate(Math.PI);
+    g.fillStyle = "#111111";
+    g.font = "bold 11px Arial, sans-serif";
+    g.textAlign = "center";
+    g.textBaseline = "middle";
+    g.fillText("FAZ", 0, 0);
+    g.restore();
+    cornerDesign(g);
+    g.restore();
+  }
+
+  g.strokeStyle = "#15151b"; g.lineWidth = 10;
+  g.strokeRect(0, 0, 400, 400);
+  g.strokeStyle = "#6b6b78"; g.lineWidth = 1.5;
+  g.strokeRect(5, 5, 390, 390);
+  g.strokeStyle = "rgba(0,0,0,0.12)"; g.lineWidth = 4;
+  g.strokeRect(7, 7, 386, 386);
+
+  for (var k = 0; k < pockets.length; k++) {
+    var px = pockets[k][0], py = pockets[k][1];
+    g.beginPath(); g.arc(px, py, 15, 0, Math.PI * 2);
+    g.fillStyle = "#000000"; g.fill();
+    g.save();
+    g.beginPath(); g.arc(px, py, 13.5, 0, Math.PI * 2); g.clip();
+    var pg = g.createRadialGradient(px - 3, py - 3, 1, px, py, 14);
+    pg.addColorStop(0, "#3a3a3a");
+    pg.addColorStop(1, "#050505");
+    g.fillStyle = pg; g.fillRect(px - 15, py - 15, 30, 30);
+    g.strokeStyle = "rgba(255,255,255,0.12)"; g.lineWidth = 0.6;
+    for (var m = -16; m <= 16; m += 4) {
+      g.beginPath(); g.moveTo(px + m, py - 16); g.lineTo(px + m, py + 16); g.stroke();
+      g.beginPath(); g.moveTo(px - 16, py + m); g.lineTo(px + 16, py + m); g.stroke();
+    }
+    g.restore();
+  }
+  return b;
+}
+
+function pieces() {
+  return striker.out ? coins.slice() : [striker].concat(coins);
+}
+
+function freeSpot() {
+  var tries = [[200, 200]];
+  for (var rr = 28; rr <= 84; rr += 28) {
+    for (var aa = 0; aa < 12; aa++) {
+      tries.push([200 + rr * Math.cos(aa * Math.PI / 6), 200 + rr * Math.sin(aa * Math.PI / 6)]);
+    }
+  }
+  for (var t = 0; t < tries.length; t++) {
+    var free = true;
+    for (var c = 0; c < coins.length; c++) {
+      var fx = coins[c].x - tries[t][0], fy = coins[c].y - tries[t][1];
+      if (Math.sqrt(fx * fx + fy * fy) < 26) { free = false; break; }
+    }
+    if (free) { return tries[t]; }
+  }
+  return [200, 200];
+}
+
+var coinLook = {
+  "#f5f5f5": {t1: "#fdf9f0", t2: "#e0d6c3", edge: "#b3a998", ring: "rgba(90,70,40,0.35)", hi: "rgba(255,255,255,0.8)"},
+  "#222222": {t1: "#4a4a4a", t2: "#141414", edge: "#000000", ring: "rgba(255,255,255,0.3)", hi: "rgba(255,255,255,0.35)"},
+  "#d62828": {t1: "#f56a55", t2: "#c42a1b", edge: "#8a160d", ring: "rgba(255,230,200,0.5)", hi: "rgba(255,255,255,0.5)"}
+};
+
+function coinDisc(x, y, r, color) {
+  var L = coinLook[color];
+  ctx.beginPath();
+  ctx.arc(x + 2, y + 4, r, 0, Math.PI * 2);
+  ctx.fillStyle = "rgba(0,0,0,0.3)";
+  ctx.fill();
+  circle(x, y + 2.5, r, L.edge);
+  var g = ctx.createRadialGradient(x - r * 0.3, y - r * 0.3, r * 0.1, x, y, r);
+  g.addColorStop(0, L.t1);
+  g.addColorStop(1, L.t2);
+  circle(x, y, r, g);
+  ctx.lineWidth = 1.2;
+  ctx.strokeStyle = L.ring;
+  ctx.beginPath(); ctx.arc(x, y, r * 0.86, 0, Math.PI * 2); ctx.stroke();
+  ctx.beginPath(); ctx.arc(x, y, r * 0.55, 0, Math.PI * 2);
+  ctx.fillStyle = "rgba(0,0,0,0.07)"; ctx.fill();
+  ctx.stroke();
+  ctx.beginPath(); ctx.arc(x, y, r * 0.18, 0, Math.PI * 2); ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(x, y, r * 0.95, Math.PI * 1.05, Math.PI * 1.45);
+  ctx.strokeStyle = L.hi; ctx.lineWidth = 1.5; ctx.stroke();
+}
+
+function strikerDisc(x, y, r) {
+  ctx.beginPath();
+  ctx.arc(x + 2, y + 4, r, 0, Math.PI * 2);
+  ctx.fillStyle = "rgba(0,0,0,0.35)";
+  ctx.fill();
+  var sk = skins[equip] || skins[0];
+  circle(x, y + 3, r, sk.e);
+  var g = ctx.createRadialGradient(x - r * 0.3, y - r * 0.3, r * 0.1, x, y, r);
+  g.addColorStop(0, sk.a);
+  g.addColorStop(1, sk.b);
+  circle(x, y, r, g);
+  ctx.strokeStyle = sk.pat;
+  ctx.fillStyle = sk.pat;
+  ctx.lineWidth = 0.9;
+  var rings = [0.93, 0.64, 0.5];
+  var k, a, b;
+  for (k = 0; k < rings.length; k++) {
+    ctx.beginPath(); ctx.arc(x, y, r * rings[k], 0, Math.PI * 2); ctx.stroke();
+  }
+  for (k = 0; k < 12; k++) {
+    a = k * Math.PI / 6;
+    ctx.beginPath();
+    ctx.moveTo(x + r * 0.9 * Math.cos(a), y + r * 0.9 * Math.sin(a));
+    ctx.lineTo(x + r * 0.7 * Math.cos(a - 0.17), y + r * 0.7 * Math.sin(a - 0.17));
+    ctx.lineTo(x + r * 0.7 * Math.cos(a + 0.17), y + r * 0.7 * Math.sin(a + 0.17));
+    ctx.closePath();
+    ctx.fill();
+    b = a + Math.PI / 12;
+    ctx.beginPath();
+    ctx.arc(x + r * 0.79 * Math.cos(b), y + r * 0.79 * Math.sin(b), r * 0.08, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+  ctx.lineWidth = 1.1;
+  for (k = 0; k < 8; k++) {
+    a = k * Math.PI / 4;
+    ctx.beginPath();
+    ctx.moveTo(x + r * 0.1 * Math.cos(a), y + r * 0.1 * Math.sin(a));
+    ctx.quadraticCurveTo(x + r * 0.42 * Math.cos(a + 0.5), y + r * 0.42 * Math.sin(a + 0.5), x + r * 0.34 * Math.cos(a + 1.1), y + r * 0.34 * Math.sin(a + 1.1));
+    ctx.stroke();
+  }
+  ctx.beginPath(); ctx.arc(x, y, r * 0.1, 0, Math.PI * 2); ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(x, y, r * 0.97, Math.PI * 1.05, Math.PI * 1.45);
+  ctx.strokeStyle = "rgba(255,255,255,0.3)"; ctx.lineWidth = 1.5; ctx.stroke();
+}
+
+function step() {
+  var all = pieces();
+  var i, j, p;
+  for (i = 0; i < all.length; i++) {
+    p = all[i];
+    p.x += p.vx; p.y += p.vy;
+    p.vx *= 0.975; p.vy *= 0.975;
+    if (p.x < p.r) { p.x = p.r; p.vx = -p.vx * 0.8; }
+    if (p.x > 400 - p.r) { p.x = 400 - p.r; p.vx = -p.vx * 0.8; }
+    if (p.y < p.r) { p.y = p.r; p.vy = -p.vy * 0.8; }
+    if (p.y > 400 - p.r) { p.y = 400 - p.r; p.vy = -p.vy * 0.8; }
+  }
+  for (i = 0; i < all.length; i++) {
+    for (j = i + 1; j < all.length; j++) {
+      var a = all[i], b = all[j];
+      var dx = b.x - a.x, dy = b.y - a.y;
+      var d = Math.sqrt(dx * dx + dy * dy), min = a.r + b.r;
+      if (d < min && d > 0) {
+        var nx = dx / d, ny = dy / d, overlap = min - d;
+        a.x -= nx * overlap / 2; a.y -= ny * overlap / 2;
+        b.x += nx * overlap / 2; b.y += ny * overlap / 2;
+        var rv = (b.vx - a.vx) * nx + (b.vy - a.vy) * ny;
+        if (rv < 0) {
+          sound("hit", Math.min(1, -rv / 10));
+          var imp = -1.8 * rv / (1 / a.m + 1 / b.m);
+          a.vx -= imp * nx / a.m; a.vy -= imp * ny / a.m;
+          b.vx += imp * nx / b.m; b.vy += imp * ny / b.m;
+        }
+      }
+    }
+  }
+  coins = coins.filter(function (c) {
+    for (var k = 0; k < pockets.length; k++) {
+      var ddx = c.x - pockets[k][0], ddy = c.y - pockets[k][1];
+      if (Math.sqrt(ddx * ddx + ddy * ddy) < 15) {
+        shotCoins.push(c);
+        sound("pocket");
+        if (cfg.fx) { fxs.push({x: pockets[k][0], y: pockets[k][1], t: 0}); }
+        return false;
+      }
+    }
+    return true;
+  });
+  for (var m = 0; m < pockets.length; m++) {
+    var sdx = striker.x - pockets[m][0], sdy = striker.y - pockets[m][1];
+    if (!striker.out && Math.sqrt(sdx * sdx + sdy * sdy) < 15) { striker.out = true; striker.vx = 0; striker.vy = 0; foul = true; }
+  }
+  var any = false;
+  all = pieces();
+  for (i = 0; i < all.length; i++) {
+    if (Math.abs(all[i].vx) + Math.abs(all[i].vy) > 0.2) { any = true; }
+    else { all[i].vx = 0; all[i].vy = 0; }
+  }
+  if (!any) {
+    moving = false;
+    var msg = "", keep = false, n, mineIdx = turn % 2, mine = myColor();
+    var queenInShot = null, normal = [], wasPending = (queenState === 1);
+    for (n = 0; n < shotCoins.length; n++) {
+      if (shotCoins[n].color === "#d62828") { queenInShot = shotCoins[n]; } else { normal.push(shotCoins[n]); }
+    }
+    if (foul) {
+      for (n = 0; n < shotCoins.length; n++) { returnCoin(shotCoins[n]); }
+      if (wasPending && queenCoin) { returnCoin(queenCoin); queenState = 0; queenCoin = null; }
+      if (!target) {
+        if (counts[mineIdx] > 0) { counts[mineIdx]--; returnCoin(newCoin(mine)); } else { owed[mineIdx]++; }
+      }
+      sound("foul");
+      msg = "FOUL! Striker pocketed" + (shotCoins.length ? ", coins returned" : "");
+    } else {
+      var ownN = 0, oppN = 0, own = [], opp = [];
+      for (n = 0; n < normal.length; n++) {
+        var ci = normal[n].color === "#f5f5f5" ? 0 : 1;
+        if (target) { scores[turn] += coinPts(normal[n]); ownN++; }
+        else {
+          counts[ci]++;
+          if (ci === mineIdx) { ownN++; own.push(normal[n]); } else { oppN++; opp.push(normal[n]); }
+        }
+      }
+      if (!target && owed[mineIdx] > 0 && ownN > 0) {
+        var pay = Math.min(owed[mineIdx], ownN);
+        for (n = 0; n < pay; n++) { var pc = own.pop(); counts[mineIdx]--; returnCoin(pc); }
+        owed[mineIdx] -= pay; ownN -= pay;
+        msg = "Penalty paid, coin returned";
+      }
+      if (queenOn) {
+        if (wasPending) {
+          if (ownN > 0) { queenState = 2; if (target) { scores[turn] += 50; } msg = "Queen covered!"; keep = true; }
+          else { returnCoin(queenCoin); queenState = 0; msg = "Queen not covered - back to the centre"; }
+          queenCoin = null;
+        } else if (queenInShot) {
+          if (ownN > 0) { queenState = 2; if (target) { scores[turn] += 50; } msg = "Queen covered!"; keep = true; }
+          else if (!target && oppN > 0) { returnCoin(queenInShot); msg = "Queen back to the centre"; }
+          else { queenState = 1; queenCoin = queenInShot; msg = "Queen pocketed - cover it now!"; keep = true; }
+        }
+      }
+      if (ownN > 0) { keep = true; }
+      if (!target && queenOn && queenState !== 2) {
+        var oppIdx = 1 - mineIdx;
+        if (counts[mineIdx] >= perSide && own.length) {
+          returnCoin(own.pop()); counts[mineIdx]--;
+          if (counts[mineIdx] > 0) { counts[mineIdx]--; returnCoin(newCoin(mine)); }
+          keep = false; msg = "FOUL! Last coin before the queen - coins returned"; sound("foul");
+        } else if (counts[oppIdx] >= perSide && opp.length) {
+          returnCoin(opp.pop()); counts[oppIdx]--;
+          if (counts[mineIdx] > 0) { counts[mineIdx]--; returnCoin(newCoin(mine)); } else { owed[mineIdx]++; }
+          keep = false; msg = "FOUL! Opponent's last coin - coins returned"; sound("foul");
+        }
+      }
+    }
+    foul = false; shotCoins = []; striker.out = false;
+    if (checkWin()) {
+      gameOver = true;
+      sound("win");
+      document.getElementById("score").innerText = winnerName + " WINS! \uD83C\uDF89";
+      awardWin();
+    } else {
+      if (!keep) { turn = (turn + 1) % sides.length; }
+      showStatus(msg);
+    }
+    placeStriker();
+    slider.disabled = gameOver || isCpuTurn();
+  }
+}
+
+function drawAim() {
+  var dx = striker.x - aimX, dy = striker.y - aimY;
+  var d = Math.sqrt(dx * dx + dy * dy);
+  if (d < 10) { return; }
+  var ux = dx / d, uy = dy / d;
+  ctx.beginPath();
+  ctx.moveTo(striker.x, striker.y);
+  ctx.lineTo(aimX, aimY);
+  ctx.strokeStyle = "rgba(255,255,255,0.5)"; ctx.lineWidth = 3; ctx.stroke();
+  for (var k = 0; k < pockets.length; k++) {
+    var qx = pockets[k][0] - striker.x, qy = pockets[k][1] - striker.y;
+    var t = qx * ux + qy * uy;
+    var off = Math.abs(qx * uy - qy * ux);
+    if (t > 0 && off < 24) {
+      ctx.beginPath();
+      ctx.arc(pockets[k][0], pockets[k][1], 19, 0, Math.PI * 2);
+      ctx.strokeStyle = "#ffd60a"; ctx.lineWidth = 4; ctx.stroke();
+    }
+  }
+  ctx.setLineDash([6, 6]);
+  ctx.beginPath();
+  ctx.moveTo(striker.x, striker.y);
+  ctx.lineTo(striker.x + ux * 700, striker.y + uy * 700);
+  ctx.strokeStyle = "rgba(255,255,255,0.8)"; ctx.lineWidth = 2; ctx.stroke();
+  ctx.setLineDash([]);
+  var len = Math.min(d, 100) * 1.5;
+  var ex = striker.x + ux * len, ey = striker.y + uy * len;
+  var ang = Math.atan2(dy, dx);
+  ctx.beginPath();
+  ctx.moveTo(striker.x, striker.y);
+  ctx.lineTo(ex, ey);
+  ctx.lineTo(ex - 14 * Math.cos(ang - 0.5), ey - 14 * Math.sin(ang - 0.5));
+  ctx.moveTo(ex, ey);
+  ctx.lineTo(ex - 14 * Math.cos(ang + 0.5), ey - 14 * Math.sin(ang + 0.5));
+  ctx.strokeStyle = "#ffd60a"; ctx.lineWidth = 4; ctx.stroke();
+}
+
+function draw() {
+  ctx.clearRect(0, 0, 400, 400);
+  if (!boardImg) { boardImg = buildBoard(); }
+  ctx.drawImage(boardImg, 0, 0);
+  for (var j = 0; j < coins.length; j++) {
+    coinDisc(coins[j].x, coins[j].y, 12.35, coins[j].color);
+  }
+  for (var fi = fxs.length - 1; fi >= 0; fi--) {
+    var fx = fxs[fi]; fx.t++;
+    if (fx.t > 24) { fxs.splice(fi, 1); continue; }
+    ctx.beginPath(); ctx.arc(fx.x, fx.y, 14 + fx.t * 1.3, 0, Math.PI * 2);
+    ctx.strokeStyle = "rgba(255,214,10," + (1 - fx.t / 24) + ")"; ctx.lineWidth = 3; ctx.stroke();
+  }
+  if (aiming && !moving) { drawAim(); }
+  if (!striker.out) {
+    if (aiming) { circle(striker.x, striker.y, 19, "rgba(255,214,10,0.5)"); }
+    strikerDisc(striker.x, striker.y, 13.5);
+  }
+}
+
+function pos(e) {
+  var r = canvas.getBoundingClientRect();
+  var px = (e.clientX - r.left) * 400 / r.width, py = (e.clientY - r.top) * 400 / r.height;
+  return flipped ? {x: 400 - px, y: 400 - py} : {x: px, y: py};
+}
+
+canvas.onpointerdown = function (e) {
+  if (moving || gameOver || isCpuTurn() || (mode === "online" && (!net.on || turn !== net.me))) { return; }
+  unlockAudio();
+  var p = pos(e);
+  var hx = p.x - striker.x, hy = p.y - striker.y;
+  if (Math.sqrt(hx * hx + hy * hy) > 45) { return; }
+  aiming = true; aimX = p.x; aimY = p.y;
+  try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
+};
+canvas.onpointermove = function (e) {
+  if (!aiming) { return; }
+  var p = pos(e); aimX = p.x; aimY = p.y;
+};
+canvas.onpointerup = function () {
+  if (!aiming) { return; }
+  aiming = false;
+  var dx = striker.x - aimX, dy = striker.y - aimY;
+  var d = Math.sqrt(dx * dx + dy * dy);
+  if (d < 10) { return; }
+  var power = Math.min(d, 100) / 100 * 22;
+  fire(dx / d * power, dy / d * power);
+};
+
+slider.oninput = function () {
+  strikerX = Number(this.value);
+  if (!moving) { placeStriker(); }
+};
+
+function loop() {
+  if (gameOver) { document.getElementById("bar").style.display = "block"; }
+  var was = moving;
+  if (moving) { step(); }
+  if (mode === "online" && was && !moving) {
+    if (shooter === net.me) { netPost(packState()); }
+    else if (net.pending) { applyState(net.pending); net.pending = null; }
+  }
+  if (mode === "online") { slider.disabled = moving || gameOver || !net.on || turn !== net.me; }
+  if (!moving && !gameOver && isCpuTurn() && !cpuBusy) { cpuBusy = true; setTimeout(cpuShot, 900); }
+  draw();
+  requestAnimationFrame(loop);
+}
+renderHome();
+listenMe();
+startGame("2p");
+loop();
+</script>
+</body>
+</html>
